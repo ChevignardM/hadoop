@@ -27,14 +27,16 @@ public class CsvChanger {
 		    
 		    	//set du splitter ,
 		    String[] s = value.toString().split(",");
-		      int row = Integer.parseInt(s[0].trim());
-		      String[] vals = s[1].trim().split("\\s+");
-		      MapWritable map = new MapWritable();
+		    //l'input reader utilise par défaut le numéro des lignes comme clé
+		      int ligne = Integer.parseInt(s[0].trim());
+		      String[] datas = s[1].trim().split("\\s+");
+		      //nouvelle map pour l'écriture
+		      MapWritable tabmap = new MapWritable();
 		      int col = 0;
-		      for(String v : vals) {
-		        int val = Integer.parseInt(v);
-		        map.put(new LongWritable(row), new IntWritable(val));
-		        context.write(new LongWritable(col), map);
+		      for(String d : datas) {
+		        int data = Integer.parseInt(d);
+		        tabmap.put(new LongWritable(ligne), new IntWritable(data));
+		        context.write(new LongWritable(col), tabmap);
 		        col++;
 			
 		      	}
@@ -45,19 +47,20 @@ public class CsvChanger {
 			
 			public void reduce(LongWritable key, Iterable<MapWritable> maps, Context context)
 				      throws IOException, InterruptedException {
-				        SortedMap<LongWritable,IntWritable> rowVals = new TreeMap<LongWritable,IntWritable>();
+				        SortedMap<LongWritable,IntWritable> outTab = new TreeMap<LongWritable,IntWritable>();
 				        for (MapWritable map : maps) {
 				          for(Entry<Writable, Writable>  entry : map.entrySet()) {
-				            rowVals.put((LongWritable) entry.getKey(),(IntWritable) entry.getValue());
+				        	  //pour chaque ligne de la map on inscrit les valeures dans la map (output)
+				            outTab.put((LongWritable) entry.getKey(),(IntWritable) entry.getValue());
 				          }
 				        }
 
-				        StringBuffer sb = new StringBuffer();
-				        for(IntWritable rowVal : rowVals.values()) {
-				          sb.append(rowVal.toString());
-				          sb.append(" ");
+				        StringBuffer buffer = new StringBuffer();
+				        for(IntWritable line : outTab.values()) {
+				          buffer.append(line.toString());
+				          buffer.append(" ");
 				        }
-				        context.write(key,new Text(sb.toString()));
+				        context.write(key,new Text(buffer.toString()));
 				}
 			
 		}
