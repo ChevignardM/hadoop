@@ -1,19 +1,33 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.*;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.Text;
+
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import java.util.Map.Entry;
 
 public class CsvChanger {
 
 
-		private static String[][] tabs;
-		private static String[][] pivots;
+		public static class Map extends Mapper<LongWritable, Text, LongWritable, MapWritable> {
+			
+		}
+		
+		public static class Reduce extends Reducer<LongWritable, MapWritable, LongWritable, Text> {
+			
+		}
 
-		public static void main(String[] args){
-
-	        String csvFile = "C:\\Users\\Maxime\\workspace\\TP Hadoop\\fichier.csv";
+	        
 	        String item = "";
 	        String cvsSplitBy = ",";
 	        int ligne =1;
@@ -21,7 +35,6 @@ public class CsvChanger {
 	        pivots = null;
 	        
 	      
-
 	        //lecture csv
 	        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
 	        	
@@ -45,24 +58,26 @@ public class CsvChanger {
 	            e.printStackTrace();
 	        }
 	        
-	        //écriture csv
-	        
-	        PrintWriter pw = null;
-			try {
-				pw = new PrintWriter(new File("C:\\Users\\Maxime\\workspace\\TP Hadoop\\output.csv"));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	        StringBuilder sb = new StringBuilder();
-	        for(int l=0; l<pivots.length; l++){
-	        sb.append(pivots[l]);
-	        sb.append('\n');
-	        }
+	        public static void main(String[] args) throws Exception {
+	            Configuration conf = new Configuration();
 
-	        pw.write(sb.toString());
-	        pw.close();
-	        
-		}
+	                Job job = new Job(conf, "matrixtranspose");
+
+	            job.setJarByClass(org.myorg.MatrixTranspose.class);    
+
+	            job.setOutputKeyClass(LongWritable.class);
+	            job.setOutputValueClass(MapWritable.class);
+
+	            job.setMapperClass(Map.class);
+	            job.setReducerClass(Reduce.class);
+
+	            job.setInputFormatClass(TextInputFormat.class);
+	            job.setOutputFormatClass(TextOutputFormat.class);
+
+	            FileInputFormat.addInputPath(job, new Path(args[0]));
+	            FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+	            job.waitForCompletion(true);
+	        }
 
 }
