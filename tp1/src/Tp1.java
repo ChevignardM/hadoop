@@ -31,7 +31,7 @@ public static class PivotReduce extends Reducer<LongWritable, Text, LongWritable
     @Override
     protected void reduce(LongWritable key, Iterable<Text> texts, Context context) throws IOException, InterruptedException {
         TreeMap<Long, String> ligne = new TreeMap<Long, String>();
-        /*Text (input qui nous vient du mapper), on re sélectionne selon le splitter de sortie du mapper ; */
+        /*Text (input qui nous vient du mapper), on sépare selon le delimiteur ; selon le standard csv ; */
         for (Text text : texts) {
             String[] parts = text.toString().split(";");
             ligne.put(Long.valueOf(parts[0]), parts[1]);
