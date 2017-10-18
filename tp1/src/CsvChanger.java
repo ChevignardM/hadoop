@@ -25,12 +25,12 @@ public class CsvChanger {
 
 		    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		    
-		    	//set du splitter ,
+		    	/*set du splitter , */
 		    String[] s = value.toString().split(",");
-		    //l'input reader utilise par défaut le numéro des lignes comme clé
+		    /*l'input reader utilise par défaut le numéro des lignes comme clé*/
 		      int ligne = Integer.parseInt(s[0].trim());
 		      String[] datas = s[1].trim().split("\\s+");
-		      //nouvelle map pour l'écriture
+		      /*nouvelle map pour l'écriture*/
 		      MapWritable tabmap = new MapWritable();
 		      int col = 0;
 		      for(String d : datas) {
@@ -38,7 +38,6 @@ public class CsvChanger {
 		        tabmap.put(new LongWritable(ligne), new IntWritable(data));
 		        context.write(new LongWritable(col), tabmap);
 		        col++;
-			
 		      	}
 		    }
 		}
@@ -50,7 +49,7 @@ public class CsvChanger {
 				        SortedMap<LongWritable,IntWritable> outTab = new TreeMap<LongWritable,IntWritable>();
 				        for (MapWritable map : maps) {
 				          for(Entry<Writable, Writable>  entry : map.entrySet()) {
-				        	  //pour chaque ligne de la map on inscrit les valeures dans la map (output)
+				        	  /*pour chaque ligne de la map on inscrit les valeures dans la map (output)*/
 				            outTab.put((LongWritable) entry.getKey(),(IntWritable) entry.getValue());
 				          }
 				        }

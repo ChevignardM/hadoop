@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class CsvChanger {
+public class tp0 {
 
 
 		private static String[][] tabs;
