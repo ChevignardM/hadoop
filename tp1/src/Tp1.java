@@ -37,7 +37,7 @@ public static class PivotReduce extends Reducer<LongWritable, Text, LongWritable
             ligne.put(Long.valueOf(parts[0]), parts[1]);
         }
         /*nouveau texte qui récupère les valeures récupérées et concatène*/
-        String text = StringUtils.join(ligne.values(), ' ');
+        String text = StringUtils.join(ligne.values(), ';');
         /*cette nouvelle ligne a donc une clé (nulle car on ne veut pas afficher le numéro de ligne), et le texte formé*/
         context.write(null, new Text(text));
     }
